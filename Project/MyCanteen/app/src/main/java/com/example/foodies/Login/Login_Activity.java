@@ -16,14 +16,14 @@ public class Login_Activity extends AppCompatActivity {
 
     private Button loginbtn;
     private DBLogin login;
-    private EditText email,pass;
+    private EditText email, pass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        login = new DBLogin(getApplicationContext());
+        login = new DBLogin(this);
 
         loginbtn = findViewById(R.id.loginbtn);
         email = findViewById(R.id.email);
@@ -35,19 +35,14 @@ public class Login_Activity extends AppCompatActivity {
                 String uemail = email.getText().toString();
                 String password = pass.getText().toString();
                 if (password.length() < 7) {
-                    Toast.makeText(Login_Activity.this, "Enter a name with at least 7 characters", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login_Activity.this, "Password must be at least 7 characters long", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                if (ValidEmail.isValidEmail(uemail)) {
-                    Toast.makeText(Login_Activity.this, "Enter Valid Email", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                boolean flag = login.isUserExists(uemail,password);
-                if(flag){
-                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                boolean flag = login.isUserExists(uemail, password);
+                if (flag) {
+                    Intent i = new Intent(Login_Activity.this, com.example.foodies.MainActivity.class);
                     startActivity(i);
-                }else{
+                } else {
                     Toast.makeText(Login_Activity.this, "Email or Password Incorrect", Toast.LENGTH_LONG).show();
                 }
             }

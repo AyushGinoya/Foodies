@@ -6,15 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login"
+    android:id="@+id/rc"
     tools:context=".Login.Reg_Activity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:id="@+id/ll"
         android:background="#8F000000">
-
-        <!-- Your existing content here -->
 
     </LinearLayout>
 

@@ -45,7 +45,7 @@ public class DBLogin extends SQLiteOpenHelper {
 
         cv.put(KEY_EMAIL,user.getEmail());
         cv.put(KEY_NAME,user.getName());
-        cv.put(KEY_PASSWORD,user.password);
+        cv.put(KEY_PASSWORD,user.getPassword());
 
         db.insert(TABLE_NAME,null,cv);
         db.close();
@@ -62,4 +62,10 @@ public class DBLogin extends SQLiteOpenHelper {
         cursor.close();
         return userExists;
     }
+
+//    public void clearAllData() {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.delete(TABLE_NAME, null, null); // This deletes all rows
+//        db.close();
+//    }
 }
