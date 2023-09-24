@@ -6,6 +6,7 @@ android {
     namespace 'com.example.foodies'
     compileSdk 33
 
+
     defaultConfig {
         applicationId "com.example.foodies"
         minSdk 21

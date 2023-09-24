@@ -51,18 +51,16 @@ public class Reg_Activity extends AppCompatActivity {
 
                     User user = new User(uemail, upassword, uname);
 
-                    user.setName(uname);
-                    user.setEmail(uemail);
-                    user.setPassword(upassword);
+                    // Assuming addUser can throw an exception, catch it and log it.
                     login.addUser(user);
 
-                    Intent intent = new Intent(Reg_Activity.this,  com.example.foodies.MainActivity.class);
-                    intent.putExtra("uname",uname);
-                    intent.putExtra("uemail",uemail);
+                    Intent intent = new Intent(Reg_Activity.this, MainActivity.class);
+                    intent.putExtra("uname", uname);
+                    intent.putExtra("uemail", uemail);
                     startActivity(intent);
-                    Log.d("msg","msg");
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
+                    Log.e("Reg_Activity", "Registration failed: " + e.getMessage());
                 }
             }
         });
