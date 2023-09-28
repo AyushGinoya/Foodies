@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:background="#F40053"
     android:paddingLeft="35dp"
+    android:id="@+id/header_layout"
     android:gravity="bottom"
     android:layout_height="176dp">
 
