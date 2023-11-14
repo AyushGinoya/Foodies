@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_marginRight="10dp"
+        android:layout_width="100dp"
+        android:id="@+id/img_home_food_list"
+        android:layout_height="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="fitCenter"
+        android:layout_marginBottom="10dp"/>
+
+
+    <TextView
+        android:layout_width="65dp"
+        android:layout_height="40dp"
+        android:fontFamily="@font/aclonica"
+        android:textStyle="bold"
+        android:layout_toEndOf="@+id/img_home_food_list"
+        android:id="@+id/food_name"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="30dp"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@+id/food_name"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:id="@+id/food_prize"
+        android:layout_marginLeft="80dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="add to cart"
+        android:id="@+id/add_to_cart"
+        android:backgroundTint="@color/mypink"
+        android:textStyle="bold"
+        android:layout_below="@+id/food_prize"
+        android:layout_toEndOf="@+id/img_home_food_list"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="35dp"/>
+
+</RelativeLayout>
