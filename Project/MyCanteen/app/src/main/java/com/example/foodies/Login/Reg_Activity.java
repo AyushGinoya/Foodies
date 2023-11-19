@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.foodies.MainActivity;
 import com.example.foodies.R;
@@ -25,11 +27,11 @@ public class Reg_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reg);
 
-        email = findViewById(R.id.email);
-        name = findViewById(R.id.name);
-        password = findViewById(R.id.password);
-        registerButton = findViewById(R.id.registerButton);
-        loginButton = findViewById(R.id.loginButton);
+        email = findViewById(R.id.r_email);
+        name = findViewById(R.id.r_name);
+        password = findViewById(R.id.r_password);
+        registerButton = findViewById(R.id.r_registerButton);
+        loginButton = findViewById(R.id.r_loginButton);
 
         login = new DBLogin(this);
 
@@ -49,14 +51,32 @@ public class Reg_Activity extends AppCompatActivity {
                     String uemail = email.getText().toString();
                     String upassword = password.getText().toString();
 
+                    if(uname.isEmpty()){
+                        name.setError("Please Enter Name");
+                        return;
+                    }
+                    if(uemail.isEmpty()){
+                        email.setError("Please Enter Email");
+                        return;
+                    }
+                    if(upassword.isEmpty()){
+                        password.setError("Please Enter Password");
+                        return;
+                    }
+                    if(!uemail.contains("@")){
+                        email.setError("Enter Valid Email");
+                        return;
+                    }
+
+
                     User user = new User(uemail, upassword, uname);
 
-                    // Assuming addUser can throw an exception, catch it and log it.
                     login.addUser(user);
 
                     Intent intent = new Intent(Reg_Activity.this, MainActivity.class);
                     intent.putExtra("uname", uname);
                     intent.putExtra("uemail", uemail);
+                    Toast.makeText(Reg_Activity.this, "Welcome " + uname, Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();

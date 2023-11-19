@@ -3,6 +3,7 @@ package com.example.foodies.userDatabase;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -39,33 +40,56 @@ public class DBLogin extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addUser(User user){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv=new ContentValues();
+    public boolean addUser(User user) {
+        long result = -1;
+        try (SQLiteDatabase db = this.getWritableDatabase()) {
+            ContentValues cv = new ContentValues();
 
-        cv.put(KEY_EMAIL,user.getEmail());
-        cv.put(KEY_NAME,user.getName());
-        cv.put(KEY_PASSWORD,user.getPassword());
+            cv.put(KEY_EMAIL, user.getEmail());
+            cv.put(KEY_NAME, user.getName());
+            cv.put(KEY_PASSWORD, user.getPassword());
 
-        db.insert(TABLE_NAME,null,cv);
-        db.close();
+            result = db.insert(TABLE_NAME, null, cv);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result != -1;
     }
 
-    public boolean isUserExists(String email,String pass) {
+
+    public boolean isUserExists(String email, String pass) {
         SQLiteDatabase db = this.getReadableDatabase();
+        boolean userExists = false;
 
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_EMAIL + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{email});
 
-        boolean userExists = cursor.moveToFirst();
+        if (cursor != null && cursor.moveToFirst()) {
+            int passwordColumnIndex = cursor.getColumnIndex(KEY_PASSWORD);
 
-        cursor.close();
+            if (passwordColumnIndex != -1) {
+                String storedPassword = cursor.getString(passwordColumnIndex);
+
+                if (storedPassword.equals(pass)) {
+                    userExists = true;
+                }
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
         return userExists;
     }
 
-//    public void clearAllData() {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        db.delete(TABLE_NAME, null, null); // This deletes all rows
-//        db.close();
-//    }
+
+
+    public void clearAllData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, null, null); // This deletes all rows
+        db.close();
+    }
 }
+
+
