@@ -35,7 +35,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:id="@+id/card_view"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="14dp"
         android:layout_marginRight="14dp"
@@ -46,7 +46,7 @@
         <com.denzcoskun.imageslider.ImageSlider
             android:id="@+id/image_slider"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="150dp"
             app:iss_auto_cycle="true"
             app:iss_delay="2000"
             app:iss_period="2000"
@@ -55,11 +55,11 @@
 
     </androidx.cardview.widget.CardView>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_food_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/food_list"
         android:layout_below="@+id/card_view"
-        android:layout_marginTop="20dp"/>
+         />
 
 </RelativeLayout>

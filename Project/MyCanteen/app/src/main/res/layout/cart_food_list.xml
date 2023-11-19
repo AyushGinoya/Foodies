@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_marginLeft="10dp"
+        app:cardCornerRadius="7dp"
+        android:layout_marginRight="10dp"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="170dp">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/cimg"/>
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:id="@+id/cfood_name"
+                android:layout_toEndOf="@+id/cimg"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/aclonica"
+                android:layout_marginLeft="20dp"/>
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:layout_toEndOf="@+id/cimg"
+                android:id="@+id/cfood_prize"
+                android:fontFamily="@font/aclonica"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="150dp"/>
+
+           <Button
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/pulse"
+               android:backgroundTint="@color/white"
+               android:text="+"
+               android:layout_toEndOf="@+id/cimg"
+               android:textColor="@color/mypink"
+               android:textStyle="bold"
+               android:textSize="30sp"
+               android:layout_below="@id/cfood_name"
+               android:layout_marginTop="50dp"/>
+
+            <TextView
+                android:id="@+id/quantity"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="124dp"
+                android:layout_toEndOf="@+id/pulse"
+                android:background="@color/mypink"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="#263238"
+                android:textScaleX="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/minus"
+                android:backgroundTint="@color/white"
+                android:text="-"
+                android:layout_toEndOf="@+id/quantity"
+                android:textColor="@color/mypink"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:layout_below="@id/cfood_prize"
+                android:layout_marginTop="50dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="65dp"
+                android:layout_toEndOf="@id/cimg"
+                android:layout_marginLeft="60dp"
+                android:id="@+id/remove"
+                android:text="remove"
+                android:backgroundTint="@color/mypink"
+                android:textStyle="bold"
+                android:fontFamily="@font/aclonica"/>
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
