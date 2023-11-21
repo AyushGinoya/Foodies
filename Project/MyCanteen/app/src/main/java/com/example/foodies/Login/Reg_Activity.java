@@ -47,6 +47,9 @@ public class Reg_Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+//                    login.clearAllData();
+                    login.logAllData();
+
                     String uname = name.getText().toString();
                     String uemail = email.getText().toString();
                     String upassword = password.getText().toString();
@@ -67,8 +70,6 @@ public class Reg_Activity extends AppCompatActivity {
                         email.setError("Enter Valid Email");
                         return;
                     }
-
-
                     User user = new User(uemail, upassword, uname);
 
                     login.addUser(user);

@@ -1,11 +1,13 @@
 package com.example.foodies.userDatabase;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -16,8 +18,7 @@ public class DBLogin extends SQLiteOpenHelper {
     private static final String KEY_NAME="name";
     private static final String KEY_EMAIL="email";
     private static final String KEY_PASSWORD="password";
-    private static final String KEY_ID="id";
-
+    private static final int KEY_Count=0;
 
     public DBLogin(@Nullable Context context) {
         super(context, DB_NAME, null, VERSION);
@@ -26,8 +27,7 @@ public class DBLogin extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_NAME + "("
-                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + KEY_EMAIL + " TEXT,"
+                + KEY_EMAIL + " TEXT PRIMARY KEY,"
                 + KEY_NAME + " TEXT,"
                 + KEY_PASSWORD + " TEXT" + ")";
 
@@ -56,33 +56,54 @@ public class DBLogin extends SQLiteOpenHelper {
 
         return result != -1;
     }
-
-
+    @SuppressLint("Range")
     public boolean isUserExists(String email, String pass) {
         SQLiteDatabase db = this.getReadableDatabase();
         boolean userExists = false;
 
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_EMAIL + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{email});
+        Cursor cursor = db.query(
+                TABLE_NAME,
+                new String[]{KEY_EMAIL, KEY_PASSWORD},
+                KEY_EMAIL + "=?",
+                new String[]{email},
+                null,
+                null,
+                null
+        );
 
         if (cursor != null && cursor.moveToFirst()) {
-            int passwordColumnIndex = cursor.getColumnIndex(KEY_PASSWORD);
+            String storedEmail = cursor.getString(cursor.getColumnIndex(KEY_EMAIL));
+            String storedPass = cursor.getString(cursor.getColumnIndex(KEY_PASSWORD));
 
-            if (passwordColumnIndex != -1) {
-                String storedPassword = cursor.getString(passwordColumnIndex);
-
-                if (storedPassword.equals(pass)) {
-                    userExists = true;
-                }
+            if (storedPass.equals(pass) && storedEmail.equals(email)) {
+                userExists = true;
             }
-        }
 
-        if (cursor != null) {
             cursor.close();
         }
+
         return userExists;
     }
 
+
+
+
+    public void logAllData() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String email = cursor.getString(1);
+                String name = cursor.getString(2);
+                String password = cursor.getString(3);
+
+                Log.d("DBLogin",   "Email: " + email + ", Name: " + name + ", Password: " + password);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+    }
 
 
     public void clearAllData() {
