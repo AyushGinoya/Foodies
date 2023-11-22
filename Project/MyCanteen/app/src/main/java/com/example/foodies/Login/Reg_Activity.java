@@ -47,8 +47,6 @@ public class Reg_Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-//                    login.clearAllData();
-                    login.logAllData();
 
                     String uname = name.getText().toString();
                     String uemail = email.getText().toString();
@@ -75,8 +73,6 @@ public class Reg_Activity extends AppCompatActivity {
                     login.addUser(user);
 
                     Intent intent = new Intent(Reg_Activity.this, MainActivity.class);
-                    intent.putExtra("uname", uname);
-                    intent.putExtra("uemail", uemail);
                     Toast.makeText(Reg_Activity.this, "Welcome " + uname, Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                 } catch (Exception e) {
