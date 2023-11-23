@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
+import com.example.foodies.tabs.CartModel;
+
+import java.util.ArrayList;
 
 public class DBLogin extends SQLiteOpenHelper {
     private static final int VERSION=1;
@@ -31,10 +33,23 @@ public class DBLogin extends SQLiteOpenHelper {
     private static final String KEY_DOB="dob";
     private static final String KEY_ADDRESS = "address";
 
+    // Table 3
 
-    public DBLogin(@Nullable Context context) {
+    private static final String TABLE_NAME3="product";
+    private static final String KEY_FOOD_NAME="food_name";
+    private static final String KEY_FOOD_PRICE = "price";
+
+    //Table 4
+    private static final String TABLE_NAME4="cart_products";
+    private static final String KEY_F_NAME="food";
+    private static final String KEY_F_PRICE="f_price";
+    private static final String KEY_IMAGE = "img";
+    private static final String KEY_QUANTITY = "quantity";
+
+    public DBLogin(Context context) {
         super(context, DB_NAME, null, VERSION);
     }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -51,15 +66,32 @@ public class DBLogin extends SQLiteOpenHelper {
                 KEY_ADDRESS + " TEXT, " +
                 KEY_DOB + " TEXT )";
 
+
+        String CREATE_PRODUCTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME3 + " ( "+
+                KEY_FOOD_NAME + " TEXT PRIMARY KEY, " +
+                KEY_FOOD_PRICE + " TEXT )";
+
+        String CREATE_CART_PRODUCTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME4 + " ( " +
+                KEY_IMAGE + " BLOB, " +
+                KEY_F_NAME + " TEXT, " +
+                KEY_F_PRICE + " TEXT, " +
+                KEY_QUANTITY + " INTEGER, " +
+                "PRIMARY KEY (" + KEY_IMAGE + ", " + KEY_F_NAME + ") )";
+
+
         db.execSQL(CREATE_USERS_TABLE);
         db.execSQL(CREATE_USERS_DETAILS_TABLE);
+        db.execSQL(CREATE_PRODUCTS_TABLE);
+        db.execSQL(CREATE_CART_PRODUCTS_TABLE);
     }
 
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME2);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME2);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME3);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME4);
             onCreate(db);
     }
 
@@ -112,8 +144,6 @@ public class DBLogin extends SQLiteOpenHelper {
     //Table - 2
     public void saveDetails(String email, String fn, String ln, String add, String num, String dob) {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        if (!isEmailExists(email)) {
             ContentValues cv = new ContentValues();
 
             cv.put(KEY_EMAIL_DETAILS, email);
@@ -123,18 +153,15 @@ public class DBLogin extends SQLiteOpenHelper {
             cv.put(KEY_NUMBER, num);
             cv.put(KEY_DOB, dob);
 
-            db.insert(TABLE_NAME2, null, cv);
-        } else {
-            Log.d("SaveDetails", "Email already exists");
-        }
+            long a = db.insert(TABLE_NAME2, null, cv);
+            Log.d("TABLE VALUE" , "Product added = " + a);
     }
 
     @SuppressLint("Range")
     public void printTableDetails() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME2, null);
 
-        try {
+        try (Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME2, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     String email = cursor.getString(cursor.getColumnIndex(KEY_EMAIL_DETAILS));
@@ -152,14 +179,10 @@ public class DBLogin extends SQLiteOpenHelper {
                             ", DOB: " + dob);
                 } while (cursor.moveToNext());
             }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
         }
     }
 
-    public void deleteTable() {
+    public void deleteTable2() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME2);
     }
@@ -167,16 +190,123 @@ public class DBLogin extends SQLiteOpenHelper {
     public boolean isEmailExists(String email1) {
         SQLiteDatabase db = this.getWritableDatabase();
         boolean exists = false;
-
-
         Cursor cursor = db.query(TABLE_NAME2,new String[]{KEY_EMAIL_DETAILS},KEY_EMAIL_DETAILS + "=?",new String[]{email1},null,null,null);
 
         if (cursor != null) {
             exists = cursor.getCount() > 0;
             cursor.close();
         }
+        return exists;
+    }
+
+
+    public void addProduct(){
+        String[] foodName = {"Chole Bhature", "Khaman", "Puff", "Vada Pav", "Panjabi"};
+        String[] foodPrice = {"50 ₹", "40 ₹", "25 ₹", "60 ₹", "45 ₹"};
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        for (int i=0;i<foodName.length;i++){
+            ContentValues values = new ContentValues();
+            values.put(KEY_FOOD_NAME,foodName[i]);
+            values.put(KEY_FOOD_PRICE,foodPrice[i]);
+
+           long a = db.insert(TABLE_NAME3,null,values);
+           Log.d("TABLE VALUE" , "Product added = " + a);
+        }
+    }
+
+    public boolean isTableExists(String tableName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='" + tableName + "'", null);
+        boolean exists = false;
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int count = cursor.getInt(0);
+            exists = count > 0;
+            cursor.close();
+        }
 
         return exists;
+    }
+
+
+    // Table 4
+    @SuppressLint({"Range", "NotifyDataSetChanged"})
+    public void addToCart(String itemName, String itemPrice, byte[] itemImage) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_F_NAME, itemName);
+        values.put(KEY_F_PRICE, itemPrice);
+        values.put(KEY_IMAGE, itemImage);
+
+        try {
+            Cursor cursor = db.query(TABLE_NAME4, new String[]{KEY_F_NAME, KEY_QUANTITY},
+                    KEY_F_NAME + "=?", new String[]{itemName}, null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int currentQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
+                int newQuantity = currentQuantity + 1;
+                ContentValues updateValues = new ContentValues();
+                updateValues.put(KEY_QUANTITY, newQuantity);
+
+                db.update(TABLE_NAME4, updateValues, KEY_F_NAME + "=?", new String[]{itemName});
+            } else {
+                values.put(KEY_QUANTITY, 1);
+                db.insert(TABLE_NAME4, null, values);
+            }
+
+            if (cursor != null) {
+                cursor.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            db.close();
+        }
+
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<CartModel> getAllCartItems() {
+        ArrayList<CartModel> cartItemsList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME4, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String itemName = cursor.getString(cursor.getColumnIndex(KEY_F_NAME));
+                String itemPrice = cursor.getString(cursor.getColumnIndex(KEY_F_PRICE));
+                byte[] itemImage = cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE));
+                int itemQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
+
+                 CartModel cartItem= new CartModel(itemImage, itemName, itemPrice, itemQuantity);
+                cartItemsList.add(cartItem);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return cartItemsList;
+    }
+    public void removeCartItem(String itemName, String itemPrice) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String selection = KEY_F_NAME + " = ? AND " + KEY_F_PRICE + " = ?";
+        String[] selectionArgs = {itemName, itemPrice};
+
+        try {
+            int deletedRows = db.delete(TABLE_NAME4, selection, selectionArgs);
+
+            if (deletedRows > 0) {
+                Log.d("DBLogin", "Item removed from cart: " + itemName);
+            } else {
+                Log.d("DBLogin", "Item not found in the cart: " + itemName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
     }
 
 }

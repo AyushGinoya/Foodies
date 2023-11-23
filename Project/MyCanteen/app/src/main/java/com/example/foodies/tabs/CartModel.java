@@ -1,16 +1,15 @@
 package com.example.foodies.tabs;
 
 public class CartModel {
-    int img;
-    String f_name,f_prize;
+    byte[] img;
+    String name;
+    String price;
+    int quantity;
 
-    @Override
-    public String toString() {
-        return "CartModel{f_name='" + f_name + "', f_prize='" + f_prize + "', img='" + img + "'}";
-    }
-    public CartModel(int img, String f_name, String f_prize) {
+    public CartModel(byte[] img, String name, String price, int quantity) {
         this.img = img;
-        this.f_name = f_name;
-        this.f_prize = f_prize;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
     }
 }

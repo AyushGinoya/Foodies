@@ -1,53 +1,107 @@
 package com.example.foodies.tabs;
 
 import android.content.Context;
-import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodies.R;
+import com.example.foodies.userDatabase.DBLogin;
 
 import java.util.ArrayList;
 
 public class RecycleCartAdapter extends RecyclerView.Adapter<RecycleCartAdapter.ViewHolder> {
 
-    private ArrayList<CartModel> cartModels;
     Context context;
+    ArrayList<CartModel> cartModels;
 
-    public RecycleCartAdapter(ArrayList<CartModel> cartModels, Context context) {
-        this.cartModels = cartModels != null ? cartModels : new ArrayList<>();
-        this.context = context;
+    public RecycleCartAdapter(ArrayList<CartModel> cartModels) {
+        this.cartModels= cartModels;
     }
 
     public RecycleCartAdapter() {
-
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.cart_food_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cart_food_list, parent, false);
+        context = parent.getContext();
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Log.d("Adapter", "onBindViewHolder called at position: " + position);;
 
-            holder.itemImageView.setImageResource(cartModels.get(position).img);
-            holder.itemPriceTextView.setText(cartModels.get(position).f_prize);
-            holder.itemNameTextView.setText(cartModels.get(position).f_name);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(cartModels.get(position).img, 0, cartModels.get(position).img.length);
+            holder.itemImageView.setImageBitmap(bitmap);
+            holder.itemPriceTextView.setText(cartModels.get(position).price);
+            holder.itemNameTextView.setText(cartModels.get(position).name);
 
-        Log.d("RecycleCartAdapter", "Item at position " + position + ": " +
-                "Name: " + cartModels.get(position).f_name +
-                ", Price: " + cartModels.get(position).f_prize +
-                ", Image: " + cartModels.get(position).img);
+            holder.pulse.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int count = Integer.parseInt(holder.quantity.getText().toString());
+                    count++;
+
+                    holder.quantity.setText(Integer.toString(count));
+                }
+            });
+
+        holder.minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int count = Integer.parseInt(holder.quantity.getText().toString());
+                if(count==0){
+                    int adapterPosition = holder.getAdapterPosition();
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        CartModel selectedItem = cartModels.get(adapterPosition);
+                        String itemName = selectedItem.name;
+                        String itemPrice = selectedItem.price;
+
+                        DBLogin dbLogin = new DBLogin(context);
+                        dbLogin.removeCartItem(itemName,itemPrice);
+                        cartModels.remove(adapterPosition);
+                        notifyItemRemoved(adapterPosition);
+
+                        Toast.makeText(context, "Item removed to cart", Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    count--;
+                    holder.quantity.setText(Integer.toString(count));
+
+
+                }
+            }
+        });
+
+        holder.remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION){
+                    CartModel selectedItem = cartModels.get(adapterPosition);
+                    String itemName = selectedItem.name;
+                    String itemPrice = selectedItem.price;
+
+                    DBLogin dbLogin = new DBLogin(context);
+                    dbLogin.removeCartItem(itemName,itemPrice);
+                    cartModels.remove(adapterPosition);
+                    notifyItemRemoved(adapterPosition);
+
+                    Toast.makeText(context, "Item removed to cart", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override

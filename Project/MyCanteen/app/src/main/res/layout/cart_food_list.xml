@@ -42,7 +42,7 @@
                 android:layout_marginLeft="150dp"/>
 
            <Button
-               android:layout_width="wrap_content"
+               android:layout_width="70dp"
                android:layout_height="wrap_content"
                android:id="@+id/pulse"
                android:backgroundTint="@color/white"
@@ -50,13 +50,13 @@
                android:layout_toEndOf="@+id/cimg"
                android:textColor="@color/mypink"
                android:textStyle="bold"
-               android:textSize="30sp"
+               android:textSize="40sp"
                android:layout_below="@id/cfood_name"
-               android:layout_marginTop="50dp"/>
+               android:layout_marginTop="55dp"/>
 
             <TextView
                 android:id="@+id/quantity"
-                android:layout_width="60dp"
+                android:layout_width="50dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="124dp"
                 android:layout_toEndOf="@+id/pulse"
@@ -69,26 +69,27 @@
                 android:textStyle="bold" />
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/minus"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/cfood_prize"
+                android:layout_marginTop="55dp"
+                android:layout_toEndOf="@+id/quantity"
                 android:backgroundTint="@color/white"
                 android:text="-"
-                android:layout_toEndOf="@+id/quantity"
                 android:textColor="@color/mypink"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_below="@id/cfood_prize"
-                android:layout_marginTop="50dp"/>
+                android:textSize="40sp"
+                android:textStyle="bold" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="65dp"
+                android:layout_marginTop="50dp"
                 android:layout_toEndOf="@id/cimg"
-                android:layout_marginLeft="60dp"
+                android:layout_marginLeft="70dp"
                 android:id="@+id/remove"
                 android:text="remove"
+                android:textColor="@color/white"
                 android:backgroundTint="@color/mypink"
                 android:textStyle="bold"
                 android:fontFamily="@font/aclonica"/>

@@ -1,6 +1,7 @@
 package com.example.foodies.tabs;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +59,11 @@ public class SettingFragment extends Fragment {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+             // dbDetails.addProduct();
+               //dbDetails.printTable3();
 
+                boolean isProductsTableExists =dbDetails.isTableExists("cart_products");
+                Log.d("Table","Table - " + isProductsTableExists);
             }
         });
 

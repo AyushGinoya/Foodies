@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,7 +25,6 @@ public class HomeFragment extends Fragment {
     String[] foodItems;
     ImageSlider imageSlider;
     RecyclerView recyclerView;
-    Button add;
     ArrayList<HomeModel> foodArray ;
     ArrayAdapter<String> arrayAdapter;
     @Override
@@ -37,7 +35,6 @@ public class HomeFragment extends Fragment {
         autoComplete = view.findViewById(R.id.autoComplete);
          imageSlider= view.findViewById(R.id.image_slider);
          recyclerView = view.findViewById(R.id.recycler_food_list);
-         add = view1.findViewById(R.id.add_to_cart);
 
          recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
          foodArray = new ArrayList<>();
@@ -65,9 +62,9 @@ public class HomeFragment extends Fragment {
 
 
         //recyclerview -  list
-        int[] images = {R.drawable.chole_bhature, R.drawable.khaman, R.drawable.puff, R.drawable.vada_pav, R.drawable.panjabi,R.drawable.chole_bhature, R.drawable.khaman, R.drawable.puff, R.drawable.vada_pav, R.drawable.panjabi};
-        String[] foodName = {"Chole Bhature", "Khaman", "Puff", "Vada Pav", "Panjabi","Chole Bhature", "Khaman", "Puff", "Vada Pav", "Panjabi"};
-        String[] foodPrice = {"50 ₹", "40 ₹", "25 ₹", "60 ₹", "45 ₹","50 ₹", "40 ₹", "25 ₹", "60 ₹", "45 ₹"};
+        int[] images = {R.drawable.chole_bhature, R.drawable.khaman, R.drawable.puff, R.drawable.vada_pav, R.drawable.panjabi};
+        String[] foodName = {"Chole Bhature", "Khaman", "Puff", "Vada Pav", "Panjabi"};
+        String[] foodPrice = {"50 ₹", "40 ₹", "25 ₹", "60 ₹", "45 ₹"};
 
 
         for(int i=0;i<foodName.length;i++){
@@ -77,11 +74,6 @@ public class HomeFragment extends Fragment {
 
         RecycleHomeAdapter adapter = new RecycleHomeAdapter(getContext(),foodArray);
         recyclerView.setAdapter(adapter);
-
-
-        //button listener
-
-
 
         // Inflate the layout for this fragment
         return view;

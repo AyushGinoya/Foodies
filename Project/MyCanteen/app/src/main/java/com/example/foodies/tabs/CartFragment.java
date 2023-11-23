@@ -11,12 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodies.R;
+import com.example.foodies.userDatabase.DBLogin;
 
 import java.util.ArrayList;
 
 public class CartFragment extends Fragment {
     RecyclerView recyclerView;
-    RecycleHomeAdapter recycleHomeAdapter;
     RecycleCartAdapter cartAdapter;
     ArrayList<CartModel> cartModelsList;
 
@@ -30,13 +30,24 @@ public class CartFragment extends Fragment {
         recyclerView = view.findViewById(R.id.cart_rec);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        recycleHomeAdapter = new RecycleHomeAdapter();
+        try {
+            try (DBLogin dbLogin = new DBLogin(requireContext())) {
+                cartModelsList = dbLogin.getAllCartItems();
+            }
+            Log.d("LIST", "Cart Items Count: " + cartModelsList.size());
 
-        cartModelsList = recycleHomeAdapter.getCartModels();
-        Log.d("CartFragment", "Cart Items Count: " + cartModelsList.size());
+            for (CartModel cartItem : cartModelsList) {
+                Log.d("CART_ITEM", "Name: " + cartItem.name +
+                        ", Price: " + cartItem.price +
+                        ", Quantity: " + cartItem.quantity);
+            }
 
-        cartAdapter = new RecycleCartAdapter(cartModelsList, getContext());
-        recyclerView.setAdapter(cartAdapter);
+            cartAdapter = new RecycleCartAdapter(cartModelsList);
+            recyclerView.setAdapter(cartAdapter);
+        } catch (Exception e) {
+            Log.d("LIST", "Error retrieving cart items: " + e.getMessage());
+        }
+
         return view;
     }
 }

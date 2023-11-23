@@ -1,7 +1,9 @@
 package com.example.foodies.tabs;
 
 import android.content.Context;
-import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,30 +13,34 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodies.R;
+import com.example.foodies.userDatabase.DBLogin;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.ViewHolder> {
      ArrayList<HomeModel> models;
-    ArrayList<CartModel>cartModels = new ArrayList<>();
     Context context;
 
     public RecycleHomeAdapter() {
     }
 
+    DBLogin login;
     public RecycleHomeAdapter(Context  context, ArrayList<HomeModel> models) {
         this.context = context;
         this.models = models;
+        login = new DBLogin(context);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.home_food_list,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_food_list,parent,false);
         return new ViewHolder(view);
     }
 
@@ -44,6 +50,7 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
         holder.recycle_img.setImageResource(models.get(position).img);
         holder.recycle_food_name.setText(models.get(position).f_name);
         holder.recycle_food_prize.setText(models.get(position).f_prize);
+
         holder.add_to_cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,11 +61,20 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
                     String itemPrice = selectedItem.f_prize;
                     int itemImage = selectedItem.img;
 
-                    CartModel model1 = new CartModel(itemImage, itemName, itemPrice);
-                    cartModels.add(model1);
-                    Log.d("RecycleHomeAdapter", "Item added to cart - " +
-                            "Name: " + itemName + ", Price: " + itemPrice +
-                            ", Image: " + itemImage);
+                    Drawable drawable = ContextCompat.getDrawable(context, itemImage);
+                    assert drawable != null;
+                    Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
+
+                    login.addToCart(itemName, itemPrice, byteArray);
+                    CartModel model = new CartModel(byteArray, itemName, itemPrice, 1);
+                    int position = login.getAllCartItems().size() - 1;
+                    RecycleCartAdapter adapter = new RecycleCartAdapter(login.getAllCartItems());
+                    adapter.notifyItemInserted(position);
+
                     Toast.makeText(context, "Item added to cart", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -85,7 +101,5 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
         }
     }
 
-    ArrayList<CartModel> getCartModels(){
-        return cartModels;
-    }
+
 }
