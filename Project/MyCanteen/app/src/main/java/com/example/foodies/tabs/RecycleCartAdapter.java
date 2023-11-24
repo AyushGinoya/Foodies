@@ -43,9 +43,10 @@ public class RecycleCartAdapter extends RecyclerView.Adapter<RecycleCartAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(cartModels.get(position).img, 0, cartModels.get(position).img.length);
-            holder.itemImageView.setImageBitmap(bitmap);
-            holder.itemPriceTextView.setText(cartModels.get(position).price);
-            holder.itemNameTextView.setText(cartModels.get(position).name);
+        holder.itemImageView.setImageBitmap(bitmap);
+        holder.itemPriceTextView.setText(cartModels.get(position).price);
+        holder.itemNameTextView.setText(cartModels.get(position).name);
+        holder.quantity.setText(String.valueOf(cartModels.get(position).quantity));
 
             holder.pulse.setOnClickListener(new View.OnClickListener() {
                 @Override

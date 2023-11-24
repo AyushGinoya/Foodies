@@ -1,6 +1,7 @@
 package com.example.foodies.tabs;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.foodies.R;
 import com.example.foodies.userDatabase.DBLogin;
@@ -19,33 +21,69 @@ public class CartFragment extends Fragment {
     RecyclerView recyclerView;
     RecycleCartAdapter cartAdapter;
     ArrayList<CartModel> cartModelsList;
+    SwipeRefreshLayout refreshLayout;
 
     public CartFragment() {
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Refresh the data in onResume
+        refreshCartItems();
+    }
+
+    private void refreshCartItems() {
+        try {
+            DBLogin dbLogin = new DBLogin(requireContext());
+            cartModelsList = dbLogin.getAllCartItems();
+
+            // Set up RecyclerView and adapter
+            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+            cartAdapter = new RecycleCartAdapter(cartModelsList);
+            recyclerView.setAdapter(cartAdapter);
+        } catch (Exception e) {
+            Log.d("LIST", "Error retrieving cart items: " + e.getMessage());
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         recyclerView = view.findViewById(R.id.cart_rec);
+        refreshLayout = view.findViewById(R.id.refresh);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        try (DBLogin dbLogin = new DBLogin(requireContext())) {
+            cartModelsList = dbLogin.getAllCartItems();
+        }
+
+        cartAdapter = new RecycleCartAdapter(cartModelsList);
+        recyclerView.setAdapter(cartAdapter);
 
         try {
-            try (DBLogin dbLogin = new DBLogin(requireContext())) {
-                cartModelsList = dbLogin.getAllCartItems();
-            }
-            Log.d("LIST", "Cart Items Count: " + cartModelsList.size());
+            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    try (DBLogin dbLogin = new DBLogin(requireContext())) {
+                        cartModelsList = dbLogin.getAllCartItems();
+                    }
+                    cartAdapter = new RecycleCartAdapter(cartModelsList);
+                    recyclerView.setAdapter(cartAdapter);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                        }
+                    },500);
+                }
+            });
 
-            for (CartModel cartItem : cartModelsList) {
-                Log.d("CART_ITEM", "Name: " + cartItem.name +
-                        ", Price: " + cartItem.price +
-                        ", Quantity: " + cartItem.quantity);
-            }
-
-            cartAdapter = new RecycleCartAdapter(cartModelsList);
-            recyclerView.setAdapter(cartAdapter);
         } catch (Exception e) {
             Log.d("LIST", "Error retrieving cart items: " + e.getMessage());
+        } finally {
+
         }
 
         return view;

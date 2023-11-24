@@ -157,7 +157,7 @@ public class DBLogin extends SQLiteOpenHelper {
             Log.d("TABLE VALUE" , "Product added = " + a);
     }
 
-    @SuppressLint("Range")
+   @SuppressLint("Range")
     public void printTableDetails() {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -240,30 +240,33 @@ public class DBLogin extends SQLiteOpenHelper {
         values.put(KEY_F_PRICE, itemPrice);
         values.put(KEY_IMAGE, itemImage);
 
-        try {
-            Cursor cursor = db.query(TABLE_NAME4, new String[]{KEY_F_NAME, KEY_QUANTITY},
-                    KEY_F_NAME + "=?", new String[]{itemName}, null, null, null);
-
-            if (cursor != null && cursor.moveToFirst()) {
-                int currentQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
-                int newQuantity = currentQuantity + 1;
-                ContentValues updateValues = new ContentValues();
-                updateValues.put(KEY_QUANTITY, newQuantity);
-
-                db.update(TABLE_NAME4, updateValues, KEY_F_NAME + "=?", new String[]{itemName});
-            } else {
+//        try {
+//            Cursor cursor = db.query(TABLE_NAME4, new String[]{KEY_F_NAME, KEY_F_PRICE,KEY_IMAGE, KEY_QUANTITY},
+//                    KEY_F_NAME + "=? AND " + KEY_F_PRICE + "=? AND " + KEY_IMAGE + "=?",
+//                    new String[]{itemName, itemPrice, Arrays.toString(itemImage)}, null, null, null);
+//            if (cursor != null && cursor.moveToFirst()) {
+//                int currentQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
+//                int newQuantity = currentQuantity + 1;
+//                ContentValues updateValues = new ContentValues();
+//                updateValues.put(KEY_QUANTITY, newQuantity);
+//
+//                db.update(TABLE_NAME4, updateValues,
+//                        KEY_F_NAME + "=? AND " + KEY_F_PRICE + "=? AND " + KEY_IMAGE + "=?",
+//                        new String[]{itemName, itemPrice, Arrays.toString(itemImage)});
+//            }
+//            else {
                 values.put(KEY_QUANTITY, 1);
-                db.insert(TABLE_NAME4, null, values);
-            }
-
-            if (cursor != null) {
-                cursor.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            db.close();
-        }
-
+                db.insertWithOnConflict(TABLE_NAME4, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+//            }
+//
+//            if (cursor != null) {
+//                cursor.close();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            db.close();
+//        }
+        db.close();
     }
 
     @SuppressLint("Range")

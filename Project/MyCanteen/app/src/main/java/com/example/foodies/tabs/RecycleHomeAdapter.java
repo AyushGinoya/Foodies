@@ -1,5 +1,6 @@
 package com.example.foodies.tabs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -52,6 +53,7 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
         holder.recycle_food_prize.setText(models.get(position).f_prize);
 
         holder.add_to_cart.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
                 int adapterPosition = holder.getAdapterPosition();
@@ -70,10 +72,6 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
                     byte[] byteArray = stream.toByteArray();
 
                     login.addToCart(itemName, itemPrice, byteArray);
-                    CartModel model = new CartModel(byteArray, itemName, itemPrice, 1);
-                    int position = login.getAllCartItems().size() - 1;
-                    RecycleCartAdapter adapter = new RecycleCartAdapter(login.getAllCartItems());
-                    adapter.notifyItemInserted(position);
 
                     Toast.makeText(context, "Item added to cart", Toast.LENGTH_SHORT).show();
                 }
