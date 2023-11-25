@@ -20,7 +20,7 @@ public class DBLogin extends SQLiteOpenHelper {
     //Table 1
     private static final String TABLE_NAME="users";
     private static final String KEY_NAME="name";
-    private static final String KEY_EMAIL="email";
+    private static final String KEY_EMAIL="email";  // Primary Key
     private static final String KEY_PASSWORD="password";
 
     //Table 2
@@ -28,7 +28,7 @@ public class DBLogin extends SQLiteOpenHelper {
     private static final String TABLE_NAME2="users_details";
     private static final String KEY_FNAME="first_name";
     private static final String KEY_LNAME="last_name";
-    private static final String KEY_EMAIL_DETAILS="email";
+    private static final String KEY_EMAIL_DETAILS="email"; // Primary Key
     private static final String KEY_NUMBER="phone_number";
     private static final String KEY_DOB="dob";
     private static final String KEY_ADDRESS = "address";
@@ -36,13 +36,15 @@ public class DBLogin extends SQLiteOpenHelper {
     // Table 3
 
     private static final String TABLE_NAME3="product";
-    private static final String KEY_FOOD_NAME="food_name";
+    private static final String KEY_FOOD_NAME="food_name"; // Primary Key
     private static final String KEY_FOOD_PRICE = "price";
 
     //Table 4
-    private static final String TABLE_NAME4="cart_products";
-    private static final String KEY_F_NAME="food";
-    private static final String KEY_F_PRICE="f_price";
+    private static final String TABLE_NAME4 = "cart_products";
+    private static final String KEY_ID = "id"; // Primary Key
+    private static final String KEY_CEMAIL = "email"; // Foreign Key
+    private static final String KEY_F_NAME = "food";
+    private static final String KEY_F_PRICE = "f_price";
     private static final String KEY_IMAGE = "img";
     private static final String KEY_QUANTITY = "quantity";
 
@@ -59,10 +61,10 @@ public class DBLogin extends SQLiteOpenHelper {
                 + KEY_PASSWORD + " TEXT" + ")";
 
         String CREATE_USERS_DETAILS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME2 + " ( " +
-                KEY_EMAIL_DETAILS + " TEXT PRIMARY KEY, " +
+                KEY_EMAIL_DETAILS + " TEXT, " +
                 KEY_FNAME + " TEXT, " +
                 KEY_LNAME + " TEXT, " +
-                KEY_NUMBER + " TEXT, " +
+                KEY_NUMBER + " TEXT  PRIMARY KEY, " +
                 KEY_ADDRESS + " TEXT, " +
                 KEY_DOB + " TEXT )";
 
@@ -71,18 +73,21 @@ public class DBLogin extends SQLiteOpenHelper {
                 KEY_FOOD_NAME + " TEXT PRIMARY KEY, " +
                 KEY_FOOD_PRICE + " TEXT )";
 
-        String CREATE_CART_PRODUCTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME4 + " ( " +
-                KEY_IMAGE + " BLOB, " +
-                KEY_F_NAME + " TEXT, " +
-                KEY_F_PRICE + " TEXT, " +
-                KEY_QUANTITY + " INTEGER, " +
-                "PRIMARY KEY (" + KEY_IMAGE + ", " + KEY_F_NAME + ") )";
+        String CREATE_CART_TABLE = "CREATE TABLE " + TABLE_NAME4 + " (" +
+                KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                KEY_EMAIL + " TEXT," +
+                KEY_F_NAME + " TEXT," +
+                KEY_F_PRICE + " REAL," +
+                KEY_IMAGE + " BLOB," +
+                KEY_QUANTITY + " INTEGER," +
+                "FOREIGN KEY (" + KEY_EMAIL + ") REFERENCES " + TABLE_NAME + "(" + KEY_EMAIL + ")" +
+                ")";
 
 
         db.execSQL(CREATE_USERS_TABLE);
         db.execSQL(CREATE_USERS_DETAILS_TABLE);
         db.execSQL(CREATE_PRODUCTS_TABLE);
-        db.execSQL(CREATE_CART_PRODUCTS_TABLE);
+        db.execSQL(CREATE_CART_TABLE);
     }
 
 
@@ -144,21 +149,38 @@ public class DBLogin extends SQLiteOpenHelper {
     //Table - 2
     public void saveDetails(String email, String fn, String ln, String add, String num, String dob) {
         SQLiteDatabase db = this.getWritableDatabase();
-            ContentValues cv = new ContentValues();
+        ContentValues cv = new ContentValues();
+        Cursor cursor = db.query(TABLE_NAME2, new String[]{KEY_EMAIL_DETAILS}, KEY_EMAIL_DETAILS + "=?", new String[]{email}, null, null, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close();
+            db.close();
+            return; 
+        }
 
-            cv.put(KEY_EMAIL_DETAILS, email);
-            cv.put(KEY_FNAME, fn);
-            cv.put(KEY_LNAME, ln);
-            cv.put(KEY_ADDRESS, add);
-            cv.put(KEY_NUMBER, num);
-            cv.put(KEY_DOB, dob);
+        cv.put(KEY_EMAIL_DETAILS, email);
+        cv.put(KEY_FNAME, fn);
+        cv.put(KEY_LNAME, ln);
+        cv.put(KEY_ADDRESS, add);
+        cv.put(KEY_NUMBER, num);
+        cv.put(KEY_DOB, dob);
 
-            long a = db.insert(TABLE_NAME2, null, cv);
-            Log.d("TABLE VALUE" , "Product added = " + a);
+        try {
+            long rowId = db.insert(TABLE_NAME2, null, cv);
+            if (rowId != -1) {
+                Log.d("TABLE VALUE", "Product added with ID = " + rowId);
+            } else {
+                Log.d("TABLE VALUE", "Failed to add product");
+            }
+        } catch (SQLException e) {
+            Log.e("TABLE ERROR", "Error inserting data: " + e.getMessage());
+        } finally {
+            db.close(); // Close the database connection after use
+        }
     }
 
+
    @SuppressLint("Range")
-    public void printTableDetails() {
+    public void printTableDetails2() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         try (Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME2, null)) {
@@ -184,7 +206,7 @@ public class DBLogin extends SQLiteOpenHelper {
 
     public void deleteTable2() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME2);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME4);
     }
 
     public boolean isEmailExists(String email1) {
@@ -233,48 +255,29 @@ public class DBLogin extends SQLiteOpenHelper {
 
     // Table 4
     @SuppressLint({"Range", "NotifyDataSetChanged"})
-    public void addToCart(String itemName, String itemPrice, byte[] itemImage) {
+    public void addToCart(String email, String itemName, String itemPrice, byte[] itemImage) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(KEY_EMAIL, email);
         values.put(KEY_F_NAME, itemName);
         values.put(KEY_F_PRICE, itemPrice);
         values.put(KEY_IMAGE, itemImage);
+        values.put(KEY_QUANTITY, 1);
 
-//        try {
-//            Cursor cursor = db.query(TABLE_NAME4, new String[]{KEY_F_NAME, KEY_F_PRICE,KEY_IMAGE, KEY_QUANTITY},
-//                    KEY_F_NAME + "=? AND " + KEY_F_PRICE + "=? AND " + KEY_IMAGE + "=?",
-//                    new String[]{itemName, itemPrice, Arrays.toString(itemImage)}, null, null, null);
-//            if (cursor != null && cursor.moveToFirst()) {
-//                int currentQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
-//                int newQuantity = currentQuantity + 1;
-//                ContentValues updateValues = new ContentValues();
-//                updateValues.put(KEY_QUANTITY, newQuantity);
-//
-//                db.update(TABLE_NAME4, updateValues,
-//                        KEY_F_NAME + "=? AND " + KEY_F_PRICE + "=? AND " + KEY_IMAGE + "=?",
-//                        new String[]{itemName, itemPrice, Arrays.toString(itemImage)});
-//            }
-//            else {
-                values.put(KEY_QUANTITY, 1);
-                db.insertWithOnConflict(TABLE_NAME4, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-//            }
-//
-//            if (cursor != null) {
-//                cursor.close();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            db.close();
-//        }
+        db.insert(TABLE_NAME4, null, values);
         db.close();
     }
 
     @SuppressLint("Range")
-    public ArrayList<CartModel> getAllCartItems() {
+    public ArrayList<CartModel> getAllCartItems(String email) {
         ArrayList<CartModel> cartItemsList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME4, null);
+        String[] columns = {KEY_F_NAME, KEY_F_PRICE, KEY_IMAGE, KEY_QUANTITY};
+        String selection = KEY_EMAIL + " = ?";
+        String[] selectionArgs = {email};
+
+        Cursor cursor = db.query(TABLE_NAME4, columns, selection, selectionArgs, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -283,7 +286,7 @@ public class DBLogin extends SQLiteOpenHelper {
                 byte[] itemImage = cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE));
                 int itemQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
 
-                 CartModel cartItem= new CartModel(itemImage, itemName, itemPrice, itemQuantity);
+                CartModel cartItem = new CartModel(itemImage, itemName, itemPrice, itemQuantity);
                 cartItemsList.add(cartItem);
             } while (cursor.moveToNext());
             cursor.close();
@@ -291,11 +294,12 @@ public class DBLogin extends SQLiteOpenHelper {
 
         return cartItemsList;
     }
-    public void removeCartItem(String itemName, String itemPrice) {
+
+    public void removeCartItem(String email, String itemName, String itemPrice) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        String selection = KEY_F_NAME + " = ? AND " + KEY_F_PRICE + " = ?";
-        String[] selectionArgs = {itemName, itemPrice};
+        String selection = KEY_EMAIL + " = ? AND " + KEY_F_NAME + " = ? AND " + KEY_F_PRICE + " = ?";
+        String[] selectionArgs = {email, itemName, itemPrice};
 
         try {
             int deletedRows = db.delete(TABLE_NAME4, selection, selectionArgs);

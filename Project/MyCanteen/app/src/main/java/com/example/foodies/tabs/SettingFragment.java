@@ -38,21 +38,19 @@ public class SettingFragment extends Fragment {
         save = view.findViewById(R.id.save_btn);
         logout = view.findViewById(R.id.logout_btn);
 
-        String f_name = fn.getText().toString();
-        String l_name = ln.getText().toString();
-        String number = num.getText().toString();
-        String e_mail = email.getText().toString();
-        String u_address =  address.getText().toString();
-        String u_dob = dob.getText().toString();
-
         dbDetails = new DBLogin(getContext());
-       dbDetails.onCreate(dbDetails.getWritableDatabase());
+
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String f_name = fn.getText().toString();
+                String l_name = ln.getText().toString();
+                String number = num.getText().toString();
+                String e_mail = email.getText().toString();
+                String u_address =  address.getText().toString();
+                String u_dob = dob.getText().toString();
+
                 dbDetails.saveDetails(e_mail,f_name,l_name,u_address,number,u_dob);
-                Toast.makeText(requireContext(), "Save Clicked", Toast.LENGTH_SHORT).show();
-                dbDetails.printTableDetails();
                 Toast.makeText(requireContext(), "Save Clicked", Toast.LENGTH_SHORT).show();
             }
         });
@@ -60,7 +58,7 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View view) {
              // dbDetails.addProduct();
-               //dbDetails.printTable3();
+              // dbDetails.deleteTable2();
 
                 boolean isProductsTableExists =dbDetails.isTableExists("cart_products");
                 Log.d("Table","Table - " + isProductsTableExists);

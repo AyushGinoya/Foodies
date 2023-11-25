@@ -37,6 +37,11 @@ public class Login_Activity extends AppCompatActivity {
                 boolean flag = login.isUserExists(uemail, password);
 
                 Intent i = new Intent(Login_Activity.this, com.example.foodies.MainActivity.class);
+//                SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putString("user_email", uemail);
+//                editor.apply();
+
 
                 if(uemail.equals("") || password.equals("")){
                     Toast.makeText(Login_Activity.this, "Please Enter All The Fields", Toast.LENGTH_LONG).show();

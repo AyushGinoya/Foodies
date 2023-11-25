@@ -1,5 +1,6 @@
 package com.example.foodies;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tab;
     private ViewPager2 pager2;
     private ViewPageAdapter adapter;
+    private Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
         tab = findViewById(R.id.tab);
         pager2 = findViewById(R.id.view_pager);
         pager2.setAdapter(adapter);
+//        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+//        email = sharedPreferences.getString("user_email", "not get the value");
+
 
         tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -47,7 +52,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
 }

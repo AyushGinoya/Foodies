@@ -71,7 +71,7 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                     byte[] byteArray = stream.toByteArray();
 
-                    login.addToCart(itemName, itemPrice, byteArray);
+                    login.addToCart("email",itemName, itemPrice, byteArray);
 
                     Toast.makeText(context, "Item added to cart", Toast.LENGTH_SHORT).show();
                 }

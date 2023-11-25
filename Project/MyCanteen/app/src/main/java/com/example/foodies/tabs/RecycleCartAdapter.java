@@ -47,13 +47,13 @@ public class RecycleCartAdapter extends RecyclerView.Adapter<RecycleCartAdapter.
         holder.itemPriceTextView.setText(cartModels.get(position).price);
         holder.itemNameTextView.setText(cartModels.get(position).name);
         holder.quantity.setText(String.valueOf(cartModels.get(position).quantity));
+        String email;
 
             holder.pulse.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int count = Integer.parseInt(holder.quantity.getText().toString());
                     count++;
-
                     holder.quantity.setText(Integer.toString(count));
                 }
             });
@@ -68,9 +68,8 @@ public class RecycleCartAdapter extends RecyclerView.Adapter<RecycleCartAdapter.
                         CartModel selectedItem = cartModels.get(adapterPosition);
                         String itemName = selectedItem.name;
                         String itemPrice = selectedItem.price;
-
                         DBLogin dbLogin = new DBLogin(context);
-                        dbLogin.removeCartItem(itemName,itemPrice);
+                        dbLogin.removeCartItem("email",itemName,itemPrice);
                         cartModels.remove(adapterPosition);
                         notifyItemRemoved(adapterPosition);
 
@@ -95,7 +94,7 @@ public class RecycleCartAdapter extends RecyclerView.Adapter<RecycleCartAdapter.
                     String itemPrice = selectedItem.price;
 
                     DBLogin dbLogin = new DBLogin(context);
-                    dbLogin.removeCartItem(itemName,itemPrice);
+                    dbLogin.removeCartItem("email",itemName,itemPrice);
                     cartModels.remove(adapterPosition);
                     notifyItemRemoved(adapterPosition);
 

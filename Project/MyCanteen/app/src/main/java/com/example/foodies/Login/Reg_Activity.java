@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.foodies.MainActivity;
 import com.example.foodies.R;
 import com.example.foodies.userDatabase.DBLogin;
@@ -73,6 +74,9 @@ public class Reg_Activity extends AppCompatActivity {
                     login.addUser(user);
 
                     Intent intent = new Intent(Reg_Activity.this, MainActivity.class);
+//                    SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sharedPreferences.edit();
+//                    editor.putString("user_email", uemail);
                     Toast.makeText(Reg_Activity.this, "Welcome " + uname, Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                 } catch (Exception e) {
