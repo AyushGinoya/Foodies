@@ -291,7 +291,6 @@ public class DBLogin extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
             cursor.close();
         }
-
         return cartItemsList;
     }
 

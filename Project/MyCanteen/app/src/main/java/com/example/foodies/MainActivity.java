@@ -23,9 +23,6 @@ public class MainActivity extends AppCompatActivity {
         tab = findViewById(R.id.tab);
         pager2 = findViewById(R.id.view_pager);
         pager2.setAdapter(adapter);
-//        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-//        email = sharedPreferences.getString("user_email", "not get the value");
-
 
         tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

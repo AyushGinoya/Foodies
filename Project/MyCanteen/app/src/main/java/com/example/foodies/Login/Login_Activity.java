@@ -2,6 +2,7 @@ package com.example.foodies.Login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,20 +38,20 @@ public class Login_Activity extends AppCompatActivity {
                 boolean flag = login.isUserExists(uemail, password);
 
                 Intent i = new Intent(Login_Activity.this, com.example.foodies.MainActivity.class);
-//                SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.putString("user_email", uemail);
-//                editor.apply();
-
 
                 if(uemail.equals("") || password.equals("")){
                     Toast.makeText(Login_Activity.this, "Please Enter All The Fields", Toast.LENGTH_LONG).show();
                     return;
-                }else {
+                }else if(!Patterns.EMAIL_ADDRESS.matcher(uemail).matches()){
+                    email.setError("Valid email require");
+                    email.requestFocus();
+                    return;
+                } else {
                     if(flag){
                         startActivity(i);
                     }
                     else {
+                        pass.clearComposingText();
                         Toast.makeText(Login_Activity.this, "Email or Password Incorrect", Toast.LENGTH_LONG).show();
                         return;
                     }

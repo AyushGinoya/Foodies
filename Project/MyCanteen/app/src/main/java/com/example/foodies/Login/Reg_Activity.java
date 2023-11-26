@@ -3,6 +3,7 @@ package com.example.foodies.Login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,28 +56,31 @@ public class Reg_Activity extends AppCompatActivity {
 
                     if(uname.isEmpty()){
                         name.setError("Please Enter Name");
+                        name.requestFocus();
                         return;
                     }
                     if(uemail.isEmpty()){
                         email.setError("Please Enter Email");
+                        email.requestFocus();
                         return;
                     }
                     if(upassword.isEmpty()){
                         password.setError("Please Enter Password");
+                        password.clearComposingText();
+                        password.requestFocus();
                         return;
                     }
-                    if(!uemail.contains("@")){
-                        email.setError("Enter Valid Email");
-                        return;
+                     if(!Patterns.EMAIL_ADDRESS.matcher(uemail).matches()){
+                        email.setError("Valid email require");
+                        email.requestFocus();
+                         return;
                     }
                     User user = new User(uemail, upassword, uname);
 
                     login.addUser(user);
 
                     Intent intent = new Intent(Reg_Activity.this, MainActivity.class);
-//                    SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-//                    SharedPreferences.Editor editor = sharedPreferences.edit();
-//                    editor.putString("user_email", uemail);
+
                     Toast.makeText(Reg_Activity.this, "Welcome " + uname, Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                 } catch (Exception e) {

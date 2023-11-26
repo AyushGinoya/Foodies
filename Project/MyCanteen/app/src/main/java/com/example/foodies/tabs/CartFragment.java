@@ -24,7 +24,7 @@ public class CartFragment extends Fragment {
     ArrayList<CartModel> cartModelsList;
     SwipeRefreshLayout refreshLayout;
     TextView total;
-    String email;
+    String email="ginoyaayushi@gmail.com";
     public CartFragment() {
     }
     @Override
@@ -103,6 +103,7 @@ public class CartFragment extends Fragment {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+
                             refreshLayout.setRefreshing(false);
                         }
                     },500);
@@ -111,10 +112,7 @@ public class CartFragment extends Fragment {
 
         } catch (Exception e) {
             Log.d("LIST", "Error retrieving cart items: " + e.getMessage());
-        } finally {
-
         }
-
         return view;
     }
 }

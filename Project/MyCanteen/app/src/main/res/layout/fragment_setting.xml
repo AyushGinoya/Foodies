@@ -151,6 +151,7 @@
                android:layout_height="wrap_content"
                android:layout_below="@+id/dob"
                android:ems="19"
+               android:focusable="false"
                android:hint="Enter Your DOB"
                android:inputType="date"
                android:minHeight="48dp" />
