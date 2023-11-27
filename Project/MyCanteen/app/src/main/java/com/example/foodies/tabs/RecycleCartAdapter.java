@@ -3,6 +3,7 @@ package com.example.foodies.tabs;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,63 +24,78 @@ public class RecycleCartAdapter extends RecyclerView.Adapter<RecycleCartAdapter.
 
     Context context;
     ArrayList<CartModel> cartModels;
-
+    String email;
+    DBLogin dbLogin;
     public RecycleCartAdapter(ArrayList<CartModel> cartModels) {
         this.cartModels= cartModels;
     }
-
-    public RecycleCartAdapter() {
+    public RecycleCartAdapter(String email) {
+        this.email = email;
     }
 
+    public void setEmail(String email1) {
+        this.email = email1;
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cart_food_list, parent, false);
         context = parent.getContext();
+        this.dbLogin = new DBLogin(context);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        Bitmap bitmap = BitmapFactory.decodeByteArray(cartModels.get(position).img, 0, cartModels.get(position).img.length);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+    {
+        int adapterPosition = holder.getAdapterPosition();
+        CartModel selectedItem = cartModels.get(adapterPosition);
+        final String currentEmail = email;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(selectedItem.img, 0,selectedItem.img.length);
         holder.itemImageView.setImageBitmap(bitmap);
-        holder.itemPriceTextView.setText(cartModels.get(position).price);
-        holder.itemNameTextView.setText(cartModels.get(position).name);
-        holder.quantity.setText(String.valueOf(cartModels.get(position).quantity));
-        String email;
-
-            holder.pulse.setOnClickListener(new View.OnClickListener() {
+        holder.itemPriceTextView.setText(selectedItem.price);
+        holder.itemNameTextView.setText(selectedItem.name);
+        holder.quantity.setText(String.valueOf(selectedItem.quantity));
+        Log.d("Email",currentEmail);
+            holder.pulse.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
                 public void onClick(View view) {
+                    Log.d("Email",currentEmail);
                     int count = Integer.parseInt(holder.quantity.getText().toString());
                     count++;
-                    holder.quantity.setText(Integer.toString(count));
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        dbLogin.updateQuantity(currentEmail, selectedItem.name,count);
+                        Toast.makeText(context, "Quantity Updated", Toast.LENGTH_SHORT).show();
+                        holder.quantity.setText(Integer.toString(count));
+                    }
+                    Toast.makeText(context, "Quantity Updated", Toast.LENGTH_SHORT).show();
                 }
             });
-
         holder.minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int count = Integer.parseInt(holder.quantity.getText().toString());
-                if(count==0){
-                    int adapterPosition = holder.getAdapterPosition();
+                if(count==1)
+                {
                     if (adapterPosition != RecyclerView.NO_POSITION) {
-                        CartModel selectedItem = cartModels.get(adapterPosition);
                         String itemName = selectedItem.name;
                         String itemPrice = selectedItem.price;
                         DBLogin dbLogin = new DBLogin(context);
-                        dbLogin.removeCartItem("email",itemName,itemPrice);
+                        dbLogin.removeCartItem(currentEmail,itemName,itemPrice);
                         cartModels.remove(adapterPosition);
                         notifyItemRemoved(adapterPosition);
 
                         Toast.makeText(context, "Item removed to cart", Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                }
+                else
+                {
                     count--;
+                    if(adapterPosition != RecyclerView.NO_POSITION){
+                        dbLogin.updateQuantity(currentEmail,selectedItem.name,count);
+                    }
                     holder.quantity.setText(Integer.toString(count));
-
-
                 }
             }
         });
@@ -87,14 +103,11 @@ public class RecycleCartAdapter extends RecyclerView.Adapter<RecycleCartAdapter.
         holder.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION){
-                    CartModel selectedItem = cartModels.get(adapterPosition);
                     String itemName = selectedItem.name;
                     String itemPrice = selectedItem.price;
 
-                    DBLogin dbLogin = new DBLogin(context);
-                    dbLogin.removeCartItem("email",itemName,itemPrice);
+                    dbLogin.removeCartItem(currentEmail,itemName,itemPrice);
                     cartModels.remove(adapterPosition);
                     notifyItemRemoved(adapterPosition);
 
@@ -110,7 +123,6 @@ public class RecycleCartAdapter extends RecyclerView.Adapter<RecycleCartAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         ImageView itemImageView;
         TextView itemNameTextView, itemPriceTextView,quantity;
         Button remove,pulse,minus;

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +27,16 @@ import java.util.ArrayList;
 public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.ViewHolder> {
      ArrayList<HomeModel> models;
     Context context;
+    String email;
+    DBLogin login;
 
-    public RecycleHomeAdapter() {
+    public RecycleHomeAdapter(String email1) {
+        this.email = email1;
     }
 
-    DBLogin login;
+    public void setEmail(String email1) {
+        this.email = email1;
+    }
     public RecycleHomeAdapter(Context  context, ArrayList<HomeModel> models) {
         this.context = context;
         this.models = models;
@@ -52,9 +58,11 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
         holder.recycle_food_name.setText(models.get(position).f_name);
         holder.recycle_food_prize.setText(models.get(position).f_prize);
 
+        Log.d("Email",email);
         holder.add_to_cart.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
+
             public void onClick(View view) {
                 int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION) {
@@ -62,7 +70,7 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
                     String itemName = selectedItem.f_name;
                     String itemPrice = selectedItem.f_prize;
                     int itemImage = selectedItem.img;
-
+                    Log.d("Email",email);
                     Drawable drawable = ContextCompat.getDrawable(context, itemImage);
                     assert drawable != null;
                     Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
@@ -71,8 +79,10 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                     byte[] byteArray = stream.toByteArray();
 
-                    login.addToCart("email",itemName, itemPrice, byteArray);
-
+                    Log.d("Email",email);
+                    try (DBLogin dbLogin = new DBLogin(context)) {
+                        login.addToCart(email,itemName, itemPrice, byteArray);
+                    }
                     Toast.makeText(context, "Item added to cart", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -98,6 +108,4 @@ public class RecycleHomeAdapter extends RecyclerView.Adapter<RecycleHomeAdapter.
             add_to_cart = itemView.findViewById(R.id.add_to_cart);
         }
     }
-
-
 }

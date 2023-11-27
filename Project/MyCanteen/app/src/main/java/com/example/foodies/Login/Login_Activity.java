@@ -38,6 +38,7 @@ public class Login_Activity extends AppCompatActivity {
                 boolean flag = login.isUserExists(uemail, password);
 
                 Intent i = new Intent(Login_Activity.this, com.example.foodies.MainActivity.class);
+                i.putExtra("email",uemail);
 
                 if(uemail.equals("") || password.equals("")){
                     Toast.makeText(Login_Activity.this, "Please Enter All The Fields", Toast.LENGTH_LONG).show();

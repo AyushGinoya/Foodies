@@ -1,6 +1,8 @@
 package com.example.foodies.userDatabase;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     String email;
     String password;
     String name;
@@ -9,6 +11,18 @@ public class User {
         this.email = email;
         this.password = password;
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public User() {
     }
 
     public String getEmail() {

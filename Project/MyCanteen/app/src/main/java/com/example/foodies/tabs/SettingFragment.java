@@ -105,8 +105,8 @@ public class SettingFragment extends Fragment {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-             // dbDetails.addProduct();
-              // dbDetails.deleteTable2();
+             dbDetails.addProduct();
+               //dbDetails.deleteTable2();
 
                 boolean isProductsTableExists =dbDetails.isTableExists("cart_products");
                 Log.d("Table","Table - " + isProductsTableExists);

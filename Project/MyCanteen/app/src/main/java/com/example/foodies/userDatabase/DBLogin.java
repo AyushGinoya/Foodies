@@ -100,12 +100,15 @@ public class DBLogin extends SQLiteOpenHelper {
             onCreate(db);
     }
 
+    String email;
+
 
     public boolean addUser(User user) {
         long result = -1;
         try (SQLiteDatabase db = this.getWritableDatabase()) {
             ContentValues cv = new ContentValues();
 
+            email = user.getEmail();
             cv.put(KEY_EMAIL, user.getEmail());
             cv.put(KEY_NAME, user.getName());
             cv.put(KEY_PASSWORD, user.getPassword());
@@ -114,8 +117,11 @@ public class DBLogin extends SQLiteOpenHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return result != -1;
+    }
+
+    public String getCurrentEmail(){
+        return email;
     }
     @SuppressLint("Range")
     public boolean isUserExists(String email, String pass) {
@@ -193,12 +199,6 @@ public class DBLogin extends SQLiteOpenHelper {
                     String phoneNumber = cursor.getString(cursor.getColumnIndex(KEY_NUMBER));
                     String dob = cursor.getString(cursor.getColumnIndex(KEY_DOB));
 
-                    Log.d("TableDetails", "Email: " + email +
-                            ", First Name: " + firstName +
-                            ", Last Name: " + lastName +
-                            ", Address: " + address +
-                            ", Phone Number: " + phoneNumber +
-                            ", DOB: " + dob);
                 } while (cursor.moveToNext());
             }
         }
@@ -257,17 +257,39 @@ public class DBLogin extends SQLiteOpenHelper {
     @SuppressLint({"Range", "NotifyDataSetChanged"})
     public void addToCart(String email, String itemName, String itemPrice, byte[] itemImage) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_EMAIL, email);
-        values.put(KEY_F_NAME, itemName);
-        values.put(KEY_F_PRICE, itemPrice);
-        values.put(KEY_IMAGE, itemImage);
-        values.put(KEY_QUANTITY, 1);
 
-        db.insert(TABLE_NAME4, null, values);
+        String selectQuery = "SELECT * FROM " + TABLE_NAME4 + " WHERE " +
+                KEY_EMAIL + " = '" + email + "' AND " +
+                KEY_F_NAME + " = '" + itemName + "'";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            int currentQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
+            int newQuantity = currentQuantity + 1;
+
+            ContentValues updateValues = new ContentValues();
+            updateValues.put(KEY_QUANTITY, newQuantity);
+
+            db.update(TABLE_NAME4, updateValues,
+                    KEY_EMAIL + " = ? AND " + KEY_F_NAME + " = ?",
+                    new String[]{email, itemName});
+        } else {
+            ContentValues values = new ContentValues();
+            values.put(KEY_EMAIL, email);
+            values.put(KEY_F_NAME, itemName);
+            values.put(KEY_F_PRICE, itemPrice);
+            values.put(KEY_IMAGE, itemImage);
+            values.put(KEY_QUANTITY, 1);
+
+            db.insert(TABLE_NAME4, null, values);
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
         db.close();
     }
-
     @SuppressLint("Range")
     public ArrayList<CartModel> getAllCartItems(String email) {
         ArrayList<CartModel> cartItemsList = new ArrayList<>();
@@ -277,20 +299,23 @@ public class DBLogin extends SQLiteOpenHelper {
         String selection = KEY_EMAIL + " = ?";
         String[] selectionArgs = {email};
 
-        Cursor cursor = db.query(TABLE_NAME4, columns, selection, selectionArgs, null, null, null);
+        try (Cursor cursor = db.query(TABLE_NAME4, columns, selection, selectionArgs, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    String itemName = cursor.getString(cursor.getColumnIndex(KEY_F_NAME));
+                    String itemPrice = cursor.getString(cursor.getColumnIndex(KEY_F_PRICE));
+                    byte[] itemImage = cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE));
+                    int itemQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
 
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String itemName = cursor.getString(cursor.getColumnIndex(KEY_F_NAME));
-                String itemPrice = cursor.getString(cursor.getColumnIndex(KEY_F_PRICE));
-                byte[] itemImage = cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE));
-                int itemQuantity = cursor.getInt(cursor.getColumnIndex(KEY_QUANTITY));
-
-                CartModel cartItem = new CartModel(itemImage, itemName, itemPrice, itemQuantity);
-                cartItemsList.add(cartItem);
-            } while (cursor.moveToNext());
-            cursor.close();
+                    CartModel cartItem = new CartModel(itemImage, itemName, itemPrice, itemQuantity);
+                    Log.d("Cart Item : ","OK: " + cartItem);
+                    cartItemsList.add(cartItem);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d("DBLogin", "Error getting cart items: " + e.getMessage());
         }
+
         return cartItemsList;
     }
 
@@ -309,12 +334,31 @@ public class DBLogin extends SQLiteOpenHelper {
                 Log.d("DBLogin", "Item not found in the cart: " + itemName);
             }
         } catch (Exception e) {
+            Log.e("DBLogin", "Error removing item from cart: " + e.getMessage());
             e.printStackTrace();
         } finally {
             db.close();
         }
     }
+    public void updateQuantity(String email, String itemName, int quantity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
+        try {
+            values.put(KEY_QUANTITY, quantity);
+
+            int updatedRows = db.update(TABLE_NAME4, values,
+                    KEY_EMAIL + " = ? AND " + KEY_F_NAME + " = ?",
+                    new String[]{email, itemName});
+            if (updatedRows > 0) {
+                Log.d("DBLogin", "Quantity updated for item: " + itemName);
+            } else {
+                Log.d("DBLogin", "Item not found in cart while updating quantity: " + itemName);
+            }
+        } catch (NumberFormatException e) {
+            Log.e("DBLogin", "Invalid quantity format: " + e.getMessage());
+        } finally {
+            db.close();
+        }
+    }
 }
-
-

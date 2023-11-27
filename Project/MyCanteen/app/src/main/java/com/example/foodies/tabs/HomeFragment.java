@@ -27,17 +27,18 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     ArrayList<HomeModel> foodArray ;
     ArrayAdapter<String> arrayAdapter;
+    String email;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         View view1 = inflater.inflate(R.layout.home_food_list, container, false);
         autoComplete = view.findViewById(R.id.autoComplete);
-         imageSlider= view.findViewById(R.id.image_slider);
-         recyclerView = view.findViewById(R.id.recycler_food_list);
+        imageSlider = view.findViewById(R.id.image_slider);
+        recyclerView = view.findViewById(R.id.recycler_food_list);
 
-         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-         foodArray = new ArrayList<>();
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        foodArray = new ArrayList<>();
 
         //image slider
         foodItems = new String[]{
@@ -47,7 +48,7 @@ public class HomeFragment extends Fragment {
                 "Puff", "Thums Up", "Bhajiya", "Gathiya"
         };
 
-        arrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1,foodItems);
+        arrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, foodItems);
         autoComplete.setAdapter(arrayAdapter);
 
         ArrayList<SlideModel> imageList = new ArrayList<>();
@@ -67,17 +68,23 @@ public class HomeFragment extends Fragment {
         String[] foodPrice = {"50 ₹", "40 ₹", "25 ₹", "60 ₹", "45 ₹"};
 
 
-        for(int i=0;i<foodName.length;i++){
-            HomeModel model = new HomeModel(images[i],foodName[i],foodPrice[i]);
+        for (int i = 0; i < foodName.length; i++) {
+            HomeModel model = new HomeModel(images[i], foodName[i], foodPrice[i]);
             foodArray.add(model);
         }
 
-        RecycleHomeAdapter adapter = new RecycleHomeAdapter(getContext(),foodArray);
-        recyclerView.setAdapter(adapter);
 
-        // Inflate the layout for this fragment
-        return view;
-    }
+        RecycleHomeAdapter adapter = new RecycleHomeAdapter(getContext(), foodArray);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            email = bundle.getString("email");
+            adapter.setEmail(email);
+            RecycleCartAdapter adapter1 = new RecycleCartAdapter(email);
+            adapter1.setEmail(email);
+            recyclerView.setAdapter(adapter);
+        }
 
-
+            // Inflate the layout for this fragment
+            return view;
+        }
 }

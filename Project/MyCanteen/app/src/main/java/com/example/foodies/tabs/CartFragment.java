@@ -24,7 +24,7 @@ public class CartFragment extends Fragment {
     ArrayList<CartModel> cartModelsList;
     SwipeRefreshLayout refreshLayout;
     TextView total;
-    String email="ginoyaayushi@gmail.com";
+    String email;
     public CartFragment() {
     }
     @Override
@@ -33,32 +33,48 @@ public class CartFragment extends Fragment {
 
         refreshCartItems();
     }
-
     private void refreshCartItems() {
         try {
             DBLogin dbLogin = new DBLogin(requireContext());
-            cartModelsList = dbLogin.getAllCartItems(email);
+            Bundle bundle = getArguments();
 
-            int totalCost = 0;
-            for (int i = 0; i < cartModelsList.size(); i++) {
-                String priceString = cartModelsList.get(i).price;
-                priceString = priceString.replaceAll("[^0-9]", "");
+            if (bundle != null) {
+                email = bundle.getString("email");
+                if (email != null && !email.isEmpty()) {
+                    cartModelsList = dbLogin.getAllCartItems(email);
+                    int totalCost = calculateTotalCost(cartModelsList);
+                    total.setText(Integer.toString(totalCost));
 
-                if (!priceString.isEmpty()) {
-                    int price = Integer.parseInt(priceString);
-                    int quantity = cartModelsList.get(i).quantity;
-                    totalCost += quantity * price;
+
+                    RecycleHomeAdapter recycleHomeAdapter = new RecycleHomeAdapter(email);
+                   recycleHomeAdapter.setEmail(email);
+
+                   RecycleCartAdapter recycleCartAdapter = new RecycleCartAdapter(email);
+                   recycleCartAdapter.setEmail(email);
+
+                    recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    cartAdapter = new RecycleCartAdapter(cartModelsList);
+                    cartAdapter.setEmail(email);
+                    recyclerView.setAdapter(cartAdapter);
                 }
             }
-            total.setText(String.valueOf(totalCost));
-
-            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-            cartAdapter = new RecycleCartAdapter(cartModelsList);
-            recyclerView.setAdapter(cartAdapter);
         } catch (Exception e) {
             Log.d("LIST", "Error retrieving cart items: " + e.getMessage());
         }
     }
+
+    private int calculateTotalCost(ArrayList<CartModel> cartModelsList) {
+        int totalCost = 0;
+        for (CartModel cartModel : cartModelsList) {
+            String priceString = cartModel.price.replaceAll("[^0-9]", "");
+            if (!priceString.isEmpty()) {
+                int price = Integer.parseInt(priceString);
+                totalCost += cartModel.quantity * price;
+            }
+        }
+        return totalCost;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,27 +84,30 @@ public class CartFragment extends Fragment {
         refreshLayout = view.findViewById(R.id.refresh);
         total = view.findViewById(R.id.amount);
 
+
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         try (DBLogin dbLogin = new DBLogin(requireContext())) {
-            cartModelsList = dbLogin.getAllCartItems(email);
-        }
-        int totalCost = 0;
-        for (int i = 0; i < cartModelsList.size(); i++) {
-            String priceString = cartModelsList.get(i).price;
-            priceString = priceString.replaceAll("[^0-9]", "");
-
-            if (!priceString.isEmpty()) {
-                int price = Integer.parseInt(priceString);
-                int quantity = cartModelsList.get(i).quantity;
-                totalCost += quantity * price;
+            Bundle bundle = getArguments();
+            if (bundle != null) {
+                email = bundle.getString("email");
             }
-
+            RecycleHomeAdapter adapter = new RecycleHomeAdapter(email);
+            adapter.setEmail(email);
+            RecycleCartAdapter recycleCartAdapter = new RecycleCartAdapter(email);
+            recycleCartAdapter.setEmail(email);
+            if (email != null) {
+                cartModelsList = dbLogin.getAllCartItems(email);
+            } else {
+                Log.d("Email", "Email is null");
+            }
         }
-        Log.d("COST" , "Cost - "+totalCost);
-        total.setText(String.valueOf(totalCost) + "₹");
+
+        int totalCost = calculateTotalCost(cartModelsList);
+        total.setText(Integer.toString(totalCost));
 
 
         cartAdapter = new RecycleCartAdapter(cartModelsList);
+        cartAdapter.setEmail(email);
         recyclerView.setAdapter(cartAdapter);
 
         try {
@@ -99,14 +118,9 @@ public class CartFragment extends Fragment {
                         cartModelsList = dbLogin.getAllCartItems(email);
                     }
                     cartAdapter = new RecycleCartAdapter(cartModelsList);
+                    cartAdapter.setEmail(email);
                     recyclerView.setAdapter(cartAdapter);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            refreshLayout.setRefreshing(false);
-                        }
-                    },500);
+                    new Handler().postDelayed(() -> refreshLayout.setRefreshing(false),500);
                 }
             });
 

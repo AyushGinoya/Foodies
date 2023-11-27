@@ -80,7 +80,7 @@ public class Reg_Activity extends AppCompatActivity {
                     login.addUser(user);
 
                     Intent intent = new Intent(Reg_Activity.this, MainActivity.class);
-
+                    intent.putExtra("user_model",user);
                     Toast.makeText(Reg_Activity.this, "Welcome " + uname, Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                 } catch (Exception e) {

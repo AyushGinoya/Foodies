@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.foodies.tabs.ViewPageAdapter;
+import com.example.foodies.userDatabase.User;
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,15 +15,24 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 pager2;
     private ViewPageAdapter adapter;
     private Intent intent;
+    User user;
+    String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        adapter = new ViewPageAdapter(this);
         tab = findViewById(R.id.tab);
         pager2 = findViewById(R.id.view_pager);
+
+        user = (User) getIntent().getSerializableExtra("user_model");
+
+        if (user != null) {
+            email = user.getEmail();
+        }
+        adapter = new ViewPageAdapter(this,email);
         pager2.setAdapter(adapter);
+
 
         tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
