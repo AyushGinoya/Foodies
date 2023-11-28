@@ -2,8 +2,8 @@ package com.example.foodies.tabs;
 
 public class HomeModel {
 
-    int img;
-    String f_name,f_prize;
+    public int img;
+    public String f_name,f_prize;
 
     public HomeModel(int img, String f_name, String f_prize) {
         this.img = img;

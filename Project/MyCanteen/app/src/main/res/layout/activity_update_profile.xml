@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".userDatabase.UpdateProfile">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_height="wrap_content"
+                android:text="Student Email"
+                android:id="@+id/email"
+                android:fontFamily="@font/aclonica"/>
+
+            <EditText
+                android:id="@+id/e_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="19"
+                android:hint="Enter Email"
+                android:minHeight="48dp"
+                android:autofillHints="abc@gmail.com" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student Phone Number"
+                android:fontFamily="@font/aclonica"
+                android:layout_marginTop="15dp"
+                android:id="@+id/phone"/>
+
+            <EditText
+                android:id="@+id/e_phone_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="19"
+                android:hint="Enter Phone Number"
+                android:inputType="number"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/aclonica"
+                android:layout_marginTop="15dp"
+                android:text="Student id"
+                android:id="@+id/student_id"/>
+
+            <EditText
+                android:id="@+id/esid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="19"
+                android:hint="Enter Your Student id"
+                android:inputType="date"
+                android:minHeight="48dp" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:backgroundTint="@color/mypink"
+                android:fontFamily="@font/aclonica"
+                android:id="@+id/save_btn"
+                android:textStyle="bold"
+                android:layout_marginTop="15dp"/>
+</LinearLayout>

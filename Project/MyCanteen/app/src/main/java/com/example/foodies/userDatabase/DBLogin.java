@@ -7,11 +7,14 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.example.foodies.tabs.CartModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DBLogin extends SQLiteOpenHelper {
     private static final int VERSION=1;
@@ -25,16 +28,13 @@ public class DBLogin extends SQLiteOpenHelper {
 
     //Table 2
 
-    private static final String TABLE_NAME2="users_details";
-    private static final String KEY_FNAME="first_name";
-    private static final String KEY_LNAME="last_name";
-    private static final String KEY_EMAIL_DETAILS="email"; // Primary Key
-    private static final String KEY_NUMBER="phone_number";
-    private static final String KEY_DOB="dob";
-    private static final String KEY_ADDRESS = "address";
+    private static final String TABLE_NAME2 = "users_details";
+    private static final String KEY_STUDENT_ID = "student_id";
+    private static final String KEY_EMAIL_DETAILS = "email";// Primary Key
+    private static final String KEY_NUMBER = "phone_number";
+    private static final String KEY_DOB = "dob";
 
     // Table 3
-
     private static final String TABLE_NAME3="product";
     private static final String KEY_FOOD_NAME="food_name"; // Primary Key
     private static final String KEY_FOOD_PRICE = "price";
@@ -47,6 +47,12 @@ public class DBLogin extends SQLiteOpenHelper {
     private static final String KEY_F_PRICE = "f_price";
     private static final String KEY_IMAGE = "img";
     private static final String KEY_QUANTITY = "quantity";
+
+    //Table - 5
+    private static final String TABLE_NAME5 = "profile";
+    private static final String KEY_P_EMAIL = "email";
+    private static final String KEY_P_IMAGE = "image";
+
 
     public DBLogin(Context context) {
         super(context, DB_NAME, null, VERSION);
@@ -61,11 +67,9 @@ public class DBLogin extends SQLiteOpenHelper {
                 + KEY_PASSWORD + " TEXT" + ")";
 
         String CREATE_USERS_DETAILS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME2 + " ( " +
+                KEY_STUDENT_ID + " TEXT PRIMARY KEY, " +
                 KEY_EMAIL_DETAILS + " TEXT, " +
-                KEY_FNAME + " TEXT, " +
-                KEY_LNAME + " TEXT, " +
-                KEY_NUMBER + " TEXT  PRIMARY KEY, " +
-                KEY_ADDRESS + " TEXT, " +
+                KEY_NUMBER + " TEXT, " +
                 KEY_DOB + " TEXT )";
 
 
@@ -83,11 +87,16 @@ public class DBLogin extends SQLiteOpenHelper {
                 "FOREIGN KEY (" + KEY_EMAIL + ") REFERENCES " + TABLE_NAME + "(" + KEY_EMAIL + ")" +
                 ")";
 
+        String CREATE_PROFILE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME5 + " ( " +
+                KEY_P_EMAIL + " TEXT PRIMARY KEY, " +
+                KEY_P_IMAGE + " BLOB )";
+
 
         db.execSQL(CREATE_USERS_TABLE);
         db.execSQL(CREATE_USERS_DETAILS_TABLE);
         db.execSQL(CREATE_PRODUCTS_TABLE);
         db.execSQL(CREATE_CART_TABLE);
+        db.execSQL(CREATE_PROFILE_TABLE);
     }
 
 
@@ -97,6 +106,7 @@ public class DBLogin extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME2);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME3);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME4);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME5);
             onCreate(db);
     }
 
@@ -120,9 +130,6 @@ public class DBLogin extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public String getCurrentEmail(){
-        return email;
-    }
     @SuppressLint("Range")
     public boolean isUserExists(String email, String pass) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -153,66 +160,87 @@ public class DBLogin extends SQLiteOpenHelper {
     }
 
     //Table - 2
-    public void saveDetails(String email, String fn, String ln, String add, String num, String dob) {
+    public void saveDetails(String email, String studentId, String num, String dob) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         Cursor cursor = db.query(TABLE_NAME2, new String[]{KEY_EMAIL_DETAILS}, KEY_EMAIL_DETAILS + "=?", new String[]{email}, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.close();
             db.close();
-            return; 
+            return;
         }
 
         cv.put(KEY_EMAIL_DETAILS, email);
-        cv.put(KEY_FNAME, fn);
-        cv.put(KEY_LNAME, ln);
-        cv.put(KEY_ADDRESS, add);
+        cv.put(KEY_STUDENT_ID, studentId);
         cv.put(KEY_NUMBER, num);
         cv.put(KEY_DOB, dob);
 
         try {
             long rowId = db.insert(TABLE_NAME2, null, cv);
             if (rowId != -1) {
-                Log.d("TABLE VALUE", "Product added with ID = " + rowId);
+                Log.d("TABLE VALUE", "Details added with ID = " + rowId);
             } else {
-                Log.d("TABLE VALUE", "Failed to add product");
+                Log.d("TABLE VALUE", "Failed to add details");
             }
         } catch (SQLException e) {
             Log.e("TABLE ERROR", "Error inserting data: " + e.getMessage());
         } finally {
-            db.close(); // Close the database connection after use
+            db.close();
         }
     }
 
-
-   @SuppressLint("Range")
-    public void printTableDetails2() {
+    public HashMap<String, String> retrieveDetails(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
+        HashMap<String, String> detailsMap = new HashMap<>();
 
-        try (Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME2, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    String email = cursor.getString(cursor.getColumnIndex(KEY_EMAIL_DETAILS));
-                    String firstName = cursor.getString(cursor.getColumnIndex(KEY_FNAME));
-                    String lastName = cursor.getString(cursor.getColumnIndex(KEY_LNAME));
-                    String address = cursor.getString(cursor.getColumnIndex(KEY_ADDRESS));
-                    String phoneNumber = cursor.getString(cursor.getColumnIndex(KEY_NUMBER));
-                    String dob = cursor.getString(cursor.getColumnIndex(KEY_DOB));
+        Cursor cursor = db.query(TABLE_NAME2, null, KEY_EMAIL_DETAILS + "=?", new String[]{email}, null, null, null);
 
-                } while (cursor.moveToNext());
+        if (cursor != null && cursor.moveToFirst()) {
+            String[] columnNames = cursor.getColumnNames();
+
+            for (String columnName : columnNames) {
+                int columnIndex = cursor.getColumnIndex(columnName);
+                String columnValue = cursor.getString(columnIndex);
+                detailsMap.put(columnName, columnValue);
             }
+            cursor.close();
+        }
+
+        db.close();
+        return detailsMap;
+    }
+
+    public void updateDetails(String email, String studentId, String num,String newEmail) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(KEY_STUDENT_ID, studentId);
+        cv.put(KEY_NUMBER, num);
+        cv.put(KEY_EMAIL_DETAILS, newEmail);
+
+        try {
+            int affectedRows = db.update(TABLE_NAME2, cv, KEY_EMAIL_DETAILS + "=?", new String[]{email});
+            if (affectedRows > 0) {
+                Log.d("TABLE VALUE", "Details updated for email: " + email);
+            } else {
+                Log.d("TABLE VALUE", "Failed to update details");
+            }
+        } catch (SQLException e) {
+            Log.e("TABLE ERROR", "Error updating data: " + e.getMessage());
+        } finally {
+            db.close();
         }
     }
 
     public void deleteTable2() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME4);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME2);
     }
 
     public boolean isEmailExists(String email1) {
         SQLiteDatabase db = this.getWritableDatabase();
         boolean exists = false;
-        Cursor cursor = db.query(TABLE_NAME2,new String[]{KEY_EMAIL_DETAILS},KEY_EMAIL_DETAILS + "=?",new String[]{email1},null,null,null);
+        Cursor cursor = db.query(TABLE_NAME2, new String[]{KEY_EMAIL_DETAILS}, KEY_EMAIL_DETAILS + "=?", new String[]{email1}, null, null, null);
 
         if (cursor != null) {
             exists = cursor.getCount() > 0;
@@ -222,6 +250,7 @@ public class DBLogin extends SQLiteOpenHelper {
     }
 
 
+    // Table - 3
     public void addProduct(){
         String[] foodName = {"Chole Bhature", "Khaman", "Puff", "Vada Pav", "Panjabi"};
         String[] foodPrice = {"50 ₹", "40 ₹", "25 ₹", "60 ₹", "45 ₹"};
@@ -361,4 +390,37 @@ public class DBLogin extends SQLiteOpenHelper {
             db.close();
         }
     }
+
+    //Table - 5
+    public void addImageToProfile(String email, byte[] imageBytes) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_P_EMAIL, email);
+        values.put(KEY_P_IMAGE, imageBytes);
+
+        db.insert(TABLE_NAME, null, values);
+        db.close();
+    }
+
+    @SuppressLint("Range")
+    public Bitmap getImageFroProfile(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Bitmap bitmap = null;
+
+        String selectQuery = "SELECT " + KEY_P_IMAGE + " FROM " + TABLE_NAME5 + " WHERE " + KEY_P_EMAIL + " = ?";
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{email});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            byte[] imageBytes = cursor.getBlob(cursor.getColumnIndex(KEY_P_IMAGE));
+            cursor.close();
+
+            if (imageBytes != null) {
+                bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+            }
+        }
+
+        return bitmap;
+    }
+
 }

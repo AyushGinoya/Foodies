@@ -7,6 +7,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.example.foodies.tabs.CartFragment;
+import com.example.foodies.tabs.HomeFragment;
+import com.example.foodies.tabs.SettingFragment;
+
 public class ViewPageAdapter extends FragmentStateAdapter {
     String email;
     public ViewPageAdapter(@NonNull FragmentActivity fragmentActivity, String email) {
@@ -34,9 +38,21 @@ public class ViewPageAdapter extends FragmentStateAdapter {
            }
            return fragment;
        }else if(position==2){
-           return new SettingFragment();
+           SettingFragment fragment = new SettingFragment();
+           if(fragment!=null){
+               Bundle bundle = new Bundle();
+               bundle.putString("email", email);
+               fragment.setArguments(bundle);
+           }
+           return fragment;
        } else {
-           return new HomeFragment();
+           HomeFragment fragment = new HomeFragment();
+           if(fragment!=null){
+               Bundle bundle = new Bundle();
+               bundle.putString("email", email);
+               fragment.setArguments(bundle);
+           }
+           return fragment;
        }
     }
 

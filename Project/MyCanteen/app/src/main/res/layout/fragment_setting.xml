@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/setting_fragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".tabs.SettingFragment">
 
@@ -21,6 +22,7 @@
             app:civ_border_color="@color/mypink"
             app:civ_circle_background_color="@color/mypink"
             app:civ_border_overlay="true"
+            android:layout_marginTop="20dp"
             android:contentDescription="User Image" />
 
         <ImageButton
@@ -28,160 +30,116 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="90dp"
+            android:layout_marginTop="111dp"
             android:src="@drawable/baseline_photo_camera_24"
             tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
     </RelativeLayout>
 
-   <ScrollView
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:layout_below="@+id/profile_photo">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/profile_photo">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_height="wrap_content"
+                android:text="User Email"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/t_email"
+                android:fontFamily="@font/aclonica"/>
 
-       <RelativeLayout
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_marginLeft="10dp"
-           android:layout_marginTop="20dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/email1"
+                android:textSize="14sp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/t_email"/>
 
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:text="First Name"
-               android:id="@+id/fn"
-               android:fontFamily="@font/aclonica"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_below="@+id/email1"
+                android:layout_marginTop="20dp"
+                android:layout_height="wrap_content"
+                android:text="Phone Number"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/num"
+                android:fontFamily="@font/aclonica"/>
 
-           <EditText
-               android:id="@+id/first_name"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/fn"
-               android:ems="9"
-               android:hint="First Name"
-               android:minHeight="48dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/number"
+                android:textSize="14sp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/num"/>
 
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:text="Last Name"
-               android:id="@+id/ln"
-               android:layout_toEndOf="@+id/fn"
-               android:layout_marginLeft="100dp"
-               android:fontFamily="@font/aclonica"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_below="@+id/number"
+                android:layout_marginTop="20dp"
+                android:layout_height="wrap_content"
+                android:text="Student id"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/myid"
+                android:fontFamily="@font/aclonica"/>
 
-           <EditText
-               android:id="@+id/last_name"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/ln"
-               android:layout_marginLeft="180dp"
-               android:ems="9"
-               android:hint="Last Name"
-               android:minHeight="48dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/my_id"
+                android:textSize="14sp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/myid"/>
 
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_below="@+id/first_name"
-               android:layout_marginTop="15dp"
-               android:layout_height="wrap_content"
-               android:text="User Email"
-               android:id="@+id/email"
-               android:fontFamily="@font/aclonica"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_below="@+id/my_id"
+                android:layout_marginTop="20dp"
+                android:layout_height="wrap_content"
+                android:text="Date of Birth"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/birthDate"
+                android:fontFamily="@font/aclonica"/>
 
-           <EditText
-               android:id="@+id/e_email"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/email"
-               android:ems="19"
-               android:hint="Enter Email"
-               android:minHeight="48dp"
-               android:autofillHints="abc@gmail.com" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/dob2"
+                android:layout_marginLeft="10dp"
+                android:textSize="14sp"
+                android:layout_below="@id/birthDate"/>
 
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/e_email"
-               android:text="User Phone Number"
-               android:fontFamily="@font/aclonica"
-               android:layout_marginTop="15dp"
-               android:id="@+id/phone"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Update Profile"
+                android:layout_below="@+id/dob2"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="@color/mypink"
+                android:fontFamily="@font/aclonica"
+                android:id="@+id/update_profile"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="25dp"/>
 
-           <EditText
-               android:id="@+id/e_phone_number"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/phone"
-               android:ems="19"
-               android:hint="Enter Phone Number"
-               android:inputType="number"
-               android:minHeight="48dp" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Logout"
+                android:layout_below="@+id/update_profile"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="@color/mypink"
+                android:fontFamily="@font/aclonica"
+                android:id="@+id/logout"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp" />
+        </RelativeLayout>
 
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:text="User Address"
-               android:fontFamily="@font/aclonica"
-               android:layout_below="@id/e_phone_number"
-               android:layout_marginTop="15dp"
-               android:id="@+id/add"/>
-
-           <EditText
-               android:id="@+id/address"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/add"
-               android:ems="19"
-               android:hint="Enter Your Address"
-               android:minHeight="48dp" />
-
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:fontFamily="@font/aclonica"
-               android:layout_marginTop="15dp"
-               android:text="Date of Birth"
-               android:layout_below="@+id/address"
-               android:id="@+id/dob"/>
-
-           <EditText
-               android:id="@+id/birth"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_below="@+id/dob"
-               android:ems="19"
-               android:focusable="false"
-               android:hint="Enter Your DOB"
-               android:inputType="date"
-               android:minHeight="48dp" />
-
-           <Button
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:text="Save"
-               android:layout_below="@+id/birth"
-               android:layout_centerHorizontal="true"
-               android:backgroundTint="@color/mypink"
-               android:fontFamily="@font/aclonica"
-               android:id="@+id/save_btn"
-               android:textStyle="bold"
-               android:layout_marginTop="15dp"/>
-
-           <Button
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:text="Logout"
-               android:layout_below="@+id/save_btn"
-               android:layout_centerHorizontal="true"
-               android:backgroundTint="@color/mypink"
-               android:fontFamily="@font/aclonica"
-               android:id="@+id/logout_btn"
-               android:textStyle="bold"
-               android:layout_marginBottom="20dp"
-               android:layout_marginTop="15dp"/>
-
-       </RelativeLayout>
-   </ScrollView>
+    </ScrollView>
 
 </RelativeLayout>
