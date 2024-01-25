@@ -1,4 +1,4 @@
-
+![Screenshot_2024-01-25-23-16-51-89_80109f728edf012f80dc5ece27b0175d jpg](https://github.com/AyushGinoya/Foodies/assets/124197069/ea2da538-5605-41b3-819b-a5eb75b3bfc2)
 ## Description
 Foodies App is a user-friendly mobile application designed for Android, developed in Core Java.
 
@@ -55,20 +55,5 @@ Provide instructions on how to use the app after installation. This could includ
 
 5)Visit your profile to update personal information and profile picture
 
-
-## Photos
-
-
-<br/>
-
-<br/>
-
-<br/>
-
-<br/>
-
-<br/>
-
-<br/>
 
 <br/>
